@@ -1325,7 +1325,7 @@ run(function()
 		return call
 	end
 
-	bedwars.BlockController.isBlockBreakable = function(self, breakTable, plr)
+	--[[bedwars.BlockController.isBlockBreakable = function(self, breakTable, plr)
 		local obj = bedwars.BlockController:getStore():getBlockAt(breakTable.blockPosition)
 
 		if obj and obj.Name == 'bed' then
@@ -1338,7 +1338,7 @@ run(function()
 
 		return OldBreak(self, breakTable, plr)
 	end
-	--[[bedwars.BlockBreaker.hitBlock = function(...)
+	bedwars.BlockBreaker.hitBlock = function(...)
         store.lastHit = tick()
         return OldHit(...)
     end]]
