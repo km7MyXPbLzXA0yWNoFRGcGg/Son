@@ -4,14 +4,10 @@ license.Key = script_key or license.Key
 
 local cloneref = cloneref or function(ref) return ref end
 local isfile = isfile or function(file)
-	local suc, res = pcall(function()
-		return readfile(file)
-	end)
+	local suc, res = pcall(function() return readfile(file) end)
 	return suc and res ~= nil and res ~= ''
 end
-local delfile = delfile or function(file)
-	writefile(file, '')
-end
+local delfile = delfile or function(file) writefile(file, '') end
 
 local downloader = Instance.new('TextLabel')
 downloader.Size = UDim2.new(1, 0, 0, 40)
@@ -25,15 +21,11 @@ downloader.Parent = Instance.new('ScreenGui', gethui and gethui() or cloneref(ga
 
 local function downloadFile(path, func)
 	if not isfile(path) then
-		if not license.Closet then
-			downloader.Text = 'Downloading '.. path
-		end
+		if not license.Closet then downloader.Text = 'Downloading '..path end
 		local suc, res = pcall(function()
 			return game:HttpGet('https://raw.githubusercontent.com/km7MyXPbLzXA0yWNoFRGcGg/Son/'..readfile('catsix/profiles/commit.txt')..'/'..select(1, path:gsub('catsix/', '')), true)
 		end)
-		if not suc or res == '404: Not Found' then
-			error(res)
-		end
+		if not suc or res == '404: Not Found' then error(res) end
 		if path:find('.lua') then
 			res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after vape updates.\n'..res
 		end
@@ -46,19 +38,14 @@ end
 local function wipeFolder(path)
 	if not isfolder(path) then return end
 	for _, file in listfiles(path) do
-		if file:find('init') then continue end
-		if file:find('profile') then continue end
-		if isfile(file) then
-			delfile(file)
-		elseif isfolder(file) then
-			wipeFolder(file)
-		end
+		if file:find('init') or file:find('profile') then continue end
+		if isfile(file) then delfile(file) elseif isfolder(file) then wipeFolder(file) end
 	end
 end
 
 for _, folder in {'catsix', 'catsix/games', 'catsix/profiles', 'catsix/assets', 'catsix/libraries', 'catsix/guis'} do
 	if not isfolder(folder) then
-		downloader.Text = 'Downloading '.. folder
+		downloader.Text = 'Downloading '..folder
 		makefolder(folder)
 	end
 end
@@ -66,12 +53,19 @@ end
 if not shared.VapeDeveloper then
 	local commit = license.Commit or nil
 	if not commit then
-		commit = 'main'
-	end
-	if commit == 'main' or (isfile('catsix/profiles/commit.txt') and readfile('catsix/profiles/commit.txt') or '') ~= commit then
-		if commit ~= 'main' and isfile('catsix/profiles/commit.txt') then
-			shared.updated = readfile('catsix/profiles/commit.txt')
+		local suc, req = pcall(request, {
+			Url = 'https://api.github.com/repos/km7MyXPbLzXA0yWNoFRGcGg/Son/commits/main',
+			Method = 'GET'
+		})
+		if suc and req.StatusCode == 200 then
+			local body = cloneref(game:GetService('HttpService')):JSONDecode(req.Body)
+			commit = body and body.sha or nil
 		end
+		commit = commit or 'main'
+	end
+	local previous = isfile('catsix/profiles/commit.txt') and readfile('catsix/profiles/commit.txt') or ''
+	if commit ~= previous then
+		if previous ~= '' then shared.updated = previous end
 		wipeFolder('catsix')
 		wipeFolder('catsix/games')
 		wipeFolder('catsix/guis')
@@ -89,9 +83,7 @@ if not shared.VapeDeveloper then
 			if not body or typeof(body) ~= 'table' then return false end
 			local installed = false
 			for _, v in body do
-				if v.type == 'file' and pcall(downloadFile, 'catsix/'.. ({v.path:gsub(' ', '%%20')})[1]) then
-					installed = true
-				end
+				if v.type == 'file' and pcall(downloadFile, 'catsix/'..({v.path:gsub(' ', '%%20')})[1]) then installed = true end
 			end
 			return installed
 		end
