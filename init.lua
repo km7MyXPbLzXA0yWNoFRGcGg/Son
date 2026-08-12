@@ -29,7 +29,7 @@ local function downloadFile(path, func)
 			downloader.Text = 'Downloading '.. path
 		end
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/MaxlaserTech/CatV6/'..readfile('catsix/profiles/commit.txt')..'/'..select(1, path:gsub('catsix/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/km7MyXPbLzXA0yWNoFRGcGg/Son/'..readfile('catsix/profiles/commit.txt')..'/'..select(1, path:gsub('catsix/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
@@ -56,7 +56,6 @@ local function wipeFolder(path)
 	end
 end
 
-
 for _, folder in {'catsix', 'catsix/games', 'catsix/profiles', 'catsix/assets', 'catsix/libraries', 'catsix/guis'} do
 	if not isfolder(folder) then
 		downloader.Text = 'Downloading '.. folder
@@ -67,12 +66,7 @@ end
 if not shared.VapeDeveloper then
 	local commit = license.Commit or nil
 	if not commit then
-		local _, subbed = pcall(function() 
-			return game:HttpGet('https://github.com/MaxlaserTech/CatV6') 
-		end)
-		commit = subbed:find('currentOid')
-		commit = commit and subbed:sub(commit + 13, commit + 52) or nil
-		commit = commit and #commit == 40 and commit or 'main'
+		commit = 'main'
 	end
 	if commit == 'main' or (isfile('catsix/profiles/commit.txt') and readfile('catsix/profiles/commit.txt') or '') ~= commit then
 		if commit ~= 'main' and isfile('catsix/profiles/commit.txt') then
@@ -87,7 +81,7 @@ if not shared.VapeDeveloper then
 	if shared.updated or #listfiles('catsix/profiles') < 4 then
 		shared.VapePresetInstall = function()
 			local suc, req = pcall(request, {
-				Url = 'https://api.github.com/repos/MaxlaserTech/CatV6/contents/profiles',
+				Url = 'https://api.github.com/repos/km7MyXPbLzXA0yWNoFRGcGg/Son/contents/profiles',
 				Method = 'GET'
 			})
 			if not suc or req.StatusCode ~= 200 then return false end
